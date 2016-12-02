@@ -42,6 +42,19 @@ function P = ComputeTransitionProbabilities( stateSpace, controlSpace, map, gate
 %           The entry P(i, j, l) represents the transition probability
 %           from state i to state j if control input l is applied.
 
-% put your code here
+l = size(control_Space);
+[K, ~] = size(state_space);
+
+P = zeros(K, K, l); %Initialize P
+
+% Probability to be caught on Camera
+
+P(~, j==gate, ~);
+
+% Probability to have a good picture
+P(:, j =, l);
+
+% Probability in moving to next state
+P(i, i+1, 1)
 
 end
