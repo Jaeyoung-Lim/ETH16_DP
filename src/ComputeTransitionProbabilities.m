@@ -60,49 +60,52 @@ for i=1:N
    for j=1:M % State K+1 is the termination state
        % find index of current state
        if map(j, i)<=0
-        cur_state = find(ismember(stateSpace, [i, j]), 1);
+        cur_pos = [j, i];
+        cur_state = find(ismember(stateSpace, cur_pos), 1);
        else
         continue;
        end
         
        %Probability of getting good picture
-       % Check Probability to be caught on Each camera
+       % Check Probability to get a good picture of the mansion
        for m=1: size(mansion, 1)
             err_mansion = [j, i]-mansion(m);
             if err_mansion(1)==0 || err_mansion(2)==0 %Camera is aligned with position
-                if err_mansion(2)==0
+                if err_mansion(1)==0
                     %Values along the camera-position path
-                    path_mansion = map(j, min(i, i-sign(err_mansion)*norm(err_mansion(2))):max(i, i-sign(err_mansion(2))*norm(err), ));
-                elseif err_mansion(1)==0
-                    path_mansion = map(min(j, j-sign(err_mansion)*norm(err_mansion)):max(j, j-sign(err_mansion)*norm(err_mansion)), i);
+                    path_mansion = map(j, min(i, i-sign(err_mansion(2))*norm(err_mansion(2))):max(i, i-sign(err_mansion(2))*norm(err_mansion(2))));
+                elseif err_mansion(2)==0
+                    path_mansion = map(min(j, j-sign(err_mansion(1))*norm(err_mansion(1))):max(j, j-sign(err_mansion(1))*norm(err_mansion(1))), i);
                 else
                     
                 end
                 if any(path_mansion(:)<=0) %There is no occlusion
-                    P_p = max(0.001, 0.5/norm(err_mansion));
+                    P(cur_state, cur_state, 5) = 1-max(0.001, 0.5/norm(err_mansion));
+                    %terminal state is not defined
                 end
             end
        end
        
-       % Check Probability to be caught on Each camera
-       for c=1: size(cameras, 1)
-        err_cam = [j, i]-cameras(c);
-            if err_cam(2)==0 %Camera is aligned with position
-                %Values along the camera-position path
-                path_cam = map(j, min(i,i-sign(err_cam)*norm(err_cam(1))):max(i,i-sign(err_cam(1))*1));
-                if any(path_cam(:)<=0) %There is an occlusion
-                    P(cur_state, state_gate, :)=P(cur_state, state_gate, :)+cameras(c, 3)*norm(err_cam);
-                end
-            elseif err_cam(1)==0
-                path_cam = map(j:j-sign(err_cam(2))*norm(err_cam(2)), i);
-                if any(path_cam(:)<=0) %There is no occlusion
-                    P(cur_state, state_gate, :)=P(cur_state, state_gate, :)+cameras(c, 3)*norm(err_cam);
-                end
-            end                    
-       end
-       for l=4:1 %Probability for moving inputs        
-            if map(j+u(l,1), i+u(l,2) < 0) % Check if there are obstacle
-                P(cur_state, find(stateSpace, [j+u(l,1), i+u(l,2)]), l)=1-P(cur_state, state_gate, l);
+       for l=4:1 %Probability for moving inputs
+           future_pos = cur_pos+u(l);
+            if map(future_pos(1), future_pos(2)) < 0 % Check if there are obstacle
+               % Check Probability to be caught on Each camera
+               for c=1: size(cameras, 1)
+                err_cam = future_pos-cameras(c);
+                    if err_cam(1)==0 || err_cam(2)==0%Camera is aligned with position
+                        if err_cam(1)==0
+                            %Values along the camera-position path
+                            path_cam = map(j, min(i,i-sign(err_cam(2))*norm(err_cam(2))):max(i,i-sign(err_cam(2))*norm(err_cam(2))));
+
+                        elseif err_cam(2)==0
+                            path_cam = map(min(j,j-sign(err_cam(1))*norm(err_cam(1))):max(j,j-sign(err_cam(1))*norm(err_cam(1))), i);
+                        end
+                        if any(path_cam(:)<=0) %There is no occlusion
+                            P_notcaught=P_notcaught*(1-cameras(c, 3)*norm(err_cam));
+                        end
+                    end
+               end              
+               P(cur_state, find(ismember(stateSpace, future_pos), 1), l)=P_notcaught;
             end
         end
     end
