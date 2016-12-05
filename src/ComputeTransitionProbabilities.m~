@@ -84,7 +84,7 @@ for i=1:N
        
        %% Compute probabilty for moving to the next cell
        for l=1:5 %Probability for moving inputs
-           future_pos = cur_pos+u(l, :);
+           future_pos = cur_pos+u(l);
            P_notcaught=1;
            if future_pos(1)<=0 || future_pos(1)>M || future_pos(2)<=0 || future_pos(2)>N
                continue
@@ -96,10 +96,10 @@ for i=1:N
                     if err_cam(1)==0 || err_cam(2)==0%Camera is aligned with position
                         if err_cam(1)==0
                             %Values along the camera-position path
-                            path_cam = map(j, min(i-sign(err_cam(2))*1,i-sign(err_cam(2))*norm(err_cam(2))):max(i-sign(err_cam(2))*1,i-sign(err_cam(2))*norm(err_cam(2))));
+                            path_cam = map(j, min(i,i-sign(err_cam(2))*norm(err_cam(2))):max(i,i-sign(err_cam(2))*norm(err_cam(2))));
 
                         elseif err_cam(2)==0
-                            path_cam = map(min(j-sign(err_cam(1))*1,j-sign(err_cam(1))*norm(err_cam(1))):max(j-sign(err_cam(1))*1,j-sign(err_cam(1))*norm(err_cam(1))), i);
+                            path_cam = map(min(j,j-sign(err_cam(1))*norm(err_cam(1))):max(j,j-sign(err_cam(1))*norm(err_cam(1))), i);
                         end
                         if any(path_cam(:)<=0) %There is no occlusion
                             P_notcaught=P_notcaught*(1-cameras(c, 3)/norm(err_cam));
