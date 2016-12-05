@@ -59,8 +59,8 @@ else
     load( 'exampleMap.mat' );
 end
 
-PlotMap( 1, mapSize, map, gate, mansion, cameras );
-PlotMap3( 2, mapSize, map, gate, mansion, cameras );
+%PlotMap( 1, mapSize, map, gate, mansion, cameras );
+%PlotMap3( 2, mapSize, map, gate, mansion, cameras );
 
 %% generate state space
 disp('generate state space');

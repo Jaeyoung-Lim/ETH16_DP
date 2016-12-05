@@ -1,4 +1,4 @@
-function G = ComputeStageCosts( stateSpace, controlSpace, map, gate, mansion, cameras )
+function G = ComputeStageCosts( stateSpace, controlSpace, map, gate, mansion, cameras, P )
 %COMPUTESTAGECOSTS Compute stage costs.
 % 	Compute the stage costs for all states in the state space for all
 %   control inputs.
@@ -47,25 +47,98 @@ function G = ComputeStageCosts( stateSpace, controlSpace, map, gate, mansion, ca
 % if move: cost = 1
 % if moving into a pool: cost = 1
 % if moving out of pool: cost = 4
-% if moving to the gate: cost = 6
+
 
 % put your code here
 
 K = size(stateSpace, 1);
 L = size(controlSpace, 1);
-
 G = zeros(K, L);
 
+% position of gate
+gg = find(ismember(stateSpace, gate, 'rows'), 1); 
+
+% size of the map
+M = size(map, 1);
+N = size(map, 2);
+
+% control inputs
+% 1-> n
+% 2-> w
+% 3-> s
+% 4-> e
+% 5-> p
+
 for k = 1:K
-     % are we in a pool?
-     if( map(stateState(k,1), stateState(k,2) ) < 0 )
-         G(k, 1:4) = 4;
-     else
-         G(k, 1:4) = 1;
-     end
+     m = stateSpace(k,2);
+     n = stateSpace(k,1);
+     ii = find(ismember(stateSpace, [n, m], 'rows'), 1);
      
-     % take photo takes 1 time unit
-     G(k, 5) = 1;
-end
+     % cost of moving north
+     G(k, 1) = 0;
+     if(m>=M) 
+         G(k, 1) = inf;
+     elseif( map(m+1, n)>0 )
+         G(k, 1) = inf;
+     else
+         jj = find(ismember(stateSpace, [n, m+1], 'rows'), 1);
+         if( map(m+1, n)<0 )
+             G(k,1) += 4*P(ii,jj,1) + 11*P(ii,gg,1); % if in pool
+         else
+             G(k,1) += 1*P(ii,jj,1) + 7*P(ii,gg,1); % if not in pool
+         end
+     end
+
+     % cost of moving west
+     G(k, 2) = 0;
+     if(n<=1) 
+         G(k, 2) = inf;
+     elseif( map(m, n-1)>0 )
+         G(k, 2) = inf;
+     else
+         jj = find(ismember(stateSpace, [n-1, m], 'rows'), 1);
+         if( map(m, n-1)<0 )
+             G(k,2) += 4*P(ii,jj,2) + 11*P(ii,gg,2); % if in pool
+         else
+             G(k,2) += 1*P(ii,jj,2) + 7*P(ii,gg,2); % if not in pool
+         end
+     end
+
+     % cost of moving south
+     G(k, 3) = 0;
+     if(m<=1) 
+         G(k, 3) = inf;
+     elseif( map(m-1, n)>0 )
+         G(k, 3) = inf;
+     else
+         jj = find(ismember(stateSpace, [n, m-1], 'rows'), 1);
+         if( map(m-1, n)<0 )
+             G(k,3) += 4*P(ii,jj,3) + 11*P(ii,gg,3); % if in pool
+         else
+             G(k,3) += 1*P(ii,jj,3) + 7*P(ii,gg,3); % if not in pool
+         end
+     end
+
+     % cost of moving east
+     G(k, 4) = 0;
+     if(n>=N) 
+         G(k, 4) = inf;
+     elseif( map(m, n+1)>0 )
+         G(k, 4) = inf;
+     else
+         jj = find(ismember(stateSpace, [n+1, m], 'rows'), 1);
+         if( map(m, n+1)<0 )
+             G(k,4) += 4*P(ii,jj,4) + 11*P(ii,gg,4); % if in pool
+         else
+             G(k,4) += 1*P(ii,jj,4) + 7*P(ii,gg,4); % if not in pool
+         end
+     end
+
+     % cost of taking a photo
+     G(k, 5) = 1*P(ii,ii,5);
+     G(k, 5) += 1*(1-P(ii,ii,5)-P(ii,gg,5));
+     G(k, 5) += 7*P(ii,gg,5); % if go to gate
+
+endfor
 
 end
