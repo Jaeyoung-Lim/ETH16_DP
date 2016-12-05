@@ -83,9 +83,15 @@ for k = 1:K
      else
          jj = find(ismember(stateSpace, [n, m+1], 'rows'), 1);
          if( map(m+1, n)<0 )
-             G(k,1) += 4*P(ii,jj,1) + 11*P(ii,gg,1); % if in pool
+             G(k,1) += 4*P(ii,jj,1); % if in pool
+             if( jj != gg )
+                 G(K,1) += 11*P(ii,gg,1); % if next state is gate, then cannot be escorted 
+             end
          else
-             G(k,1) += 1*P(ii,jj,1) + 7*P(ii,gg,1); % if not in pool
+             G(k,1) += 1*P(ii,jj,1); % if not in pool
+             if( jj != gg )
+                 G(K,1) += 7*P(ii,gg,1);
+             end
          end
      end
 
@@ -98,9 +104,15 @@ for k = 1:K
      else
          jj = find(ismember(stateSpace, [n-1, m], 'rows'), 1);
          if( map(m, n-1)<0 )
-             G(k,2) += 4*P(ii,jj,2) + 11*P(ii,gg,2); % if in pool
+             G(k,2) += 4*P(ii,jj,2); % if in pool
+             if( jj != gg )
+                 G(K,2) += 11*P(ii,gg,2);
+             end
          else
-             G(k,2) += 1*P(ii,jj,2) + 7*P(ii,gg,2); % if not in pool
+             G(k,2) += 1*P(ii,jj,2); % if not in pool
+             if( jj != gg )
+                 G(K,2) += 7*P(ii,gg,2);
+             end
          end
      end
 
@@ -113,9 +125,15 @@ for k = 1:K
      else
          jj = find(ismember(stateSpace, [n, m-1], 'rows'), 1);
          if( map(m-1, n)<0 )
-             G(k,3) += 4*P(ii,jj,3) + 11*P(ii,gg,3); % if in pool
+             G(k,3) += 4*P(ii,jj,3); % if in pool
+             if( jj != gg )
+                 G(K,3) += 11*P(ii,gg,3);
+             end
          else
-             G(k,3) += 1*P(ii,jj,3) + 7*P(ii,gg,3); % if not in pool
+             G(k,3) += 1*P(ii,jj,3); % if not in pool
+             if( jj != gg )
+                 G(K,3) += 7*P(ii,gg,3);
+             end
          end
      end
 
@@ -128,16 +146,22 @@ for k = 1:K
      else
          jj = find(ismember(stateSpace, [n+1, m], 'rows'), 1);
          if( map(m, n+1)<0 )
-             G(k,4) += 4*P(ii,jj,4) + 11*P(ii,gg,4); % if in pool
+             G(k,4) += 4*P(ii,jj,4); % if in pool
+             if( jj != gg )
+                 G(K,4) += 11*P(ii,gg,4); 
+             end
          else
-             G(k,4) += 1*P(ii,jj,4) + 7*P(ii,gg,4); % if not in pool
+             G(k,4) += 1*P(ii,jj,4); % if not in pool
+             if( jj != gg )
+                 G(K,4) += 7*P(ii,gg,4);
+             end
          end
      end
 
      % cost of taking a photo
-     G(k, 5) = 1*P(ii,ii,5);
-     G(k, 5) += 1*(1-P(ii,ii,5)-P(ii,gg,5));
-     G(k, 5) += 7*P(ii,gg,5); % if go to gate
+     G(k, 5) = 1*P(ii,ii,5);                 % if fail but not caught
+         G(k, 5) += 7*P(ii,gg,5);                % if go to gate
+         G(k, 5) += 1*(1-P(ii,ii,5)-P(ii,gg,5)); % if success
 
 endfor
 
