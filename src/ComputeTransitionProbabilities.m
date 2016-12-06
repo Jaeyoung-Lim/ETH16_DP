@@ -119,12 +119,20 @@ for k=1:K %Iteration for steps
         end
     end
 
-    if l==5 %When taking a picture
-        P(k, future_state, l)=P_notcaught*(1-P_picture);
-        P(k, state_gate, l)=(1-P_notcaught)*(1-P_picture);% Failed to take picture and got caught by the camera
+     if l==5 %When taking a picture
+         if future_state == state_gate
+             P(k, future_state, l)=1-P_picture;         
+         else
+            P(k, future_state, l)=P_notcaught*(1-P_picture);
+            P(k, state_gate, l)=(1-P_notcaught)*(1-P_picture);% Failed to take picture and got caught by the camera
+         end
     else %Wwhen moving to a new state
-        P(k, future_state, l)=P_notcaught;
-        P(k, state_gate, l)=1-P_notcaught;
+        if future_state == state_gate
+            P(k, future_state, l)=P_notcaught+(1-P_notcaught);
+        else
+            P(k, future_state, l)=P_notcaught;
+            P(k, state_gate, l)=1-P_notcaught;
+        end
     end
    end
 end
