@@ -267,7 +267,7 @@ function MV = findMansionView(mansion, map)
 %
 
     M = size(map, 1);
-    N = size(map, 2);
+    N = size(map, 2);an
     Nm = size(mansion, 1);
 
     MV_tmp = [0, 0];
