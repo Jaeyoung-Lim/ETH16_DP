@@ -69,6 +69,8 @@ Ncam = size(cameras, 1);
 % construct field-of-view of cameras
 FOV = findFOV(cameras, map);
 
+% states that can see the mansion
+MV = findMansionView(mansion, map);
 
 % control inputs
 % 1-> n
@@ -188,7 +190,7 @@ for k = 1:K
          % if take photo at gate, special treatment
          % assume you cannot see the mansion from the gate
          Pcam = findPCamera(cameras, FOV, n, m);
-         Ps = findPSuccess(map, mansion, n, m);
+         Ps = findPSuccess(mansion, MV, n, m);
          G(k, 5) = (1-Ps)*(1*(1-Pcam) + 7*Pcam) + 1*Ps;
      end
 
@@ -259,6 +261,53 @@ function FOV = findFOV(cameras, map)
 end
 
 
+function MV = findMansionView(mansion, map)
+%
+% find states where you can see the mansion
+%
+
+    M = size(map, 1);
+    N = size(map, 2);
+    Nm = size(mansion, 1);
+
+    MV_tmp = [0, 0];
+    for c = 1:Nm
+        m = mansion(c, 2);
+        n = mansion(c, 1);
+
+        % north
+        ii = 1;
+        while( (m+ii <= M) && (map(m+ii, n)<=0))
+            MV_tmp = [MV_tmp; [n, m+ii]];
+            ii = ii+1;
+        end
+
+        % south
+        ii = 1;
+        while( (m-ii >= 1) && (map(m-ii, n)<=0))
+            MV_tmp = [MV_tmp; [n, m-ii]];
+            ii = ii+1;
+        end
+    
+        % west
+        ii = 1;
+        while( (n-ii >= 1) && (map(m, n-ii)<=0))
+            MV_tmp = [MV_tmp; [n-ii, m]];
+            ii = ii+1;
+        end
+
+        % east
+        ii = 1;
+        while( (n+ii <= N) && (map(m, n+ii)<=0))
+            MV_tmp = [MV_tmp; [n+ii, m]];
+            ii = ii+1;
+        end
+    end
+    MV = MV_tmp(2:end, :);
+end
+
+
+
 function Pcam = findPCamera(cameras, FOV, n, m)
 %
 % find chance of geting caught by camera(s)
@@ -266,6 +315,8 @@ function Pcam = findPCamera(cameras, FOV, n, m)
 %    	cameras:
 %          	A (H x 3)-matrix indicating the positions and quality of the 
 %           cameras.
+%
+%       FOV: field of view of cameras, computed using findFOV function
 %
 %       n, m: coordinates of the state to check
 % 
@@ -285,55 +336,20 @@ function Pcam = findPCamera(cameras, FOV, n, m)
 end
 
 
-function Ps = findPSuccess(map, mansion, n, m)
+
+
+function Ps = findPSuccess(mansion, MV, n, m)
 %
 % find chance of taking a good picture
 %
+%     MV: mansion view, computed with findMansionView function
+%
 
   Ps = 0.001;
-  M = size(map, 1);
-  N = size(map, 2);
-  Nm = size(mansion, 1);
-
-    % find states where you can see the mansion
-    FOV_tmp = [0, 0];
-    for c = 1:Nm
-        m = mansion(c, 2);
-        n = mansion(c, 1);
-
-        % north
-        ii = 1;
-        while( (m+ii <= M) && (map(m+ii, n)<=0))
-            FOV_tmp = [FOV_tmp; [n, m+ii]];
-            ii = ii+1;
-        end
-
-        % south
-        ii = 1;
-        while( (m-ii >= 1) && (map(m-ii, n)<=0))
-            FOV_tmp = [FOV_tmp; [n, m-ii]];
-            ii = ii+1;
-        end
-    
-        % west
-        ii = 1;
-        while( (n-ii >= 1) && (map(m, n-ii)<=0))
-            FOV_tmp = [FOV_tmp; [n-ii, m]];
-            ii = ii+1;
-        end
-
-        % east
-        ii = 1;
-        while( (n+ii <= N) && (map(m, n+ii)<=0))
-            FOV_tmp = [FOV_tmp; [n+ii, m]];
-            ii = ii+1;
-        end
-    end
-    FOV = FOV_tmp(2:end, :);
 
     % if we can see mansion directly
-    if(sum( ismember(FOV, [n,m], 'rows'))>0)
-        dist_vec = sqrt( (FOV(:,1)-n).^2 + (FOV(:,2)-m).^2);
+    if(sum( ismember(MV, [n,m], 'rows'))>0)
+        dist_vec = sqrt( (MV(:,1)-n).^2 + (MV(:,2)-m).^2);
         dist_min = min(dist_vec);
         Ps = max(0.001, 0.5/dist_min);
     end
