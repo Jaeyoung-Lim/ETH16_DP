@@ -96,7 +96,8 @@ for k = 1:K
          if( map(m+1, n)<0 )
              G(k,1) += 4*P(ii,jj,1); % if in pool
              if( jj != gg )
-                 G(k,1) += 7*Pcam + 8*Pcam*(1-Pcam) + 9*Pcam*(1-Pcam)^2 + 10*Pcam*(1-Pcam)^3;
+                 G(k,1) += 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              else
                  G(k,1) += 1*(1-Pcam) + 7*Pcam;
              end
@@ -121,7 +122,8 @@ for k = 1:K
          if( map(m, n-1)<0 )
              G(k,2) += 4*P(ii,jj,2); % if in pool
              if( jj != gg )
-                 G(k,2) += 11*P(ii,gg,2);
+                 G(k,2) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end
          else    % if not in pool
              if( jj != gg )
@@ -145,7 +147,8 @@ for k = 1:K
          if( map(m-1, n)<0 )
              G(k,3) += 4*P(ii,jj,3); % if in pool
              if( jj != gg )
-                 G(k,3) += 11*P(ii,gg,3);
+                 G(k,3) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end
          else    % if not in pool
              if( jj != gg )
@@ -169,7 +172,8 @@ for k = 1:K
          if( map(m, n+1)<0 )
              G(k,4) += 4*P(ii,jj,4); % if in pool
              if( jj != gg )
-                 G(k,4) += 11*P(ii,gg,4); 
+                 G(k,4) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end 
          else    % if not in pool
              if( jj != gg )
@@ -267,7 +271,7 @@ function MV = findMansionView(mansion, map)
 %
 
     M = size(map, 1);
-    N = size(map, 2);an
+    N = size(map, 2);
     Nm = size(mansion, 1);
 
     MV_tmp = [0, 0];
