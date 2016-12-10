@@ -29,7 +29,60 @@ function [ J_opt, u_opt_ind ] = PolicyIteration( P, G )
 %       	A (K x 1)-matrix containing the index of the optimal control
 %       	input for each element of the state space.
 
-% put your code here
+K = size(G,1);
+
+% initial guess on policy: taking photo everywhere
+policy = ones(K,1) * 5;
+cost = zeros(K,1);
+
+terminate = false;
+itr_cnt = 0;
+
+while(!terminate)
+
+    printf("iteration: %d\n", itr_cnt);
+
+    % update cost based on current policy
+    A = eye(K);
+    b = zeros(K,1);
+    for m=1:K
+        u = policy(m);
+        b(m) = G(m, u);
+        for n=1:K
+            if( (P(m,n,u)>0) && (m!=n) )
+                A(m,n) = -P(m,n,u);
+            end
+        end
+    end
+    cost = inverse(A)*b;
+
+    % find new policy policy using the above cost
+    policy_tmp = ones(K,1);
+    for m=1:K
+        c = G(m, 1) + P(m,:,1)*cost;
+        policy_tmp(m) = 1;
+        for u=2:5
+            c_trail = G(m, u) + P(m,:,u)*cost;
+            if( c_trail <= c)
+                c = c_trail;
+                policy_tmp(m) = u;
+            end
+        end
+    end
+
+    % check condition for termination
+    itr_cnt += 1;
+    if( isequal(policy_tmp, policy) || (itr_cnt>1000) )
+        terminate = true;
+    end
+
+    % update policy
+    policy = policy_tmp;
+
+end
+
+J_opt = cost;
+u_opt_ind = policy;
 
 end
 
