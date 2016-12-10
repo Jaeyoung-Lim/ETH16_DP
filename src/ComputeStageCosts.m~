@@ -198,7 +198,7 @@ for k = 1:K
          G(k, 5) = (1-Ps)*(1*(1-Pcam) + 7*Pcam) + 1*Ps;
      end
 
-endfor
+end
 
 end
 
