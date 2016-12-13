@@ -48,22 +48,21 @@ u_opt_ind = zeros(num_states, 1);   % index of the optimal control input
 iter = 0;                           % number of interations
 err = 0.5;                            % iteration error bound
 
+
+%% Perform
+
+
 % temporarily used variables
 J_old = J_opt;                           % old optimal cost-to-go
 J_temp = zeros(num_states, num_inputs);  % optimal cost-to-go include inputs
 cost = zeros(num_states, num_inputs);    % total cost i to j
 
-%% Perform
-
 while(1)
     iter = iter + 1;
     
     for i = 1:num_states
-        for u = 1:num_inputs
-            for j = i:num_states
-                cost(i,u) = cost(i,u) + P(i,j,u) * J_old(j,1);
-            end
-            J_temp(i,u) =  G(i, u) + cost(i,u);
+        for u = 1:num_inputs            
+            J_temp(i,u) =  G(i, u) + P(i,:,u) * J_old;
         end
         [J_opt(i), u_opt_ind(i)] = min(J_temp(i,:));
         
