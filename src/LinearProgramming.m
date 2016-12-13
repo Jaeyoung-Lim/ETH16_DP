@@ -32,8 +32,7 @@ function [ J_opt, u_opt_ind ] = LinearProgramming( P, G )
 % put your code here
 K = size(G, 1); % Number of states
 L = size(G, 2); % Number of control inputs
-
-f=-1*ones(1, K);
+u_opt_ind=zeros(K, 1);
 
 for l=1:L
     if l==1
@@ -47,13 +46,14 @@ end
 
 A_filtered = A((b~=inf), :);
 b_filtered = b(b~=inf);
+f=-1*ones(1, K);
+
 J_opt = linprog(f, A_filtered , b_filtered);
-u_opt_ind=zeros(K, 1);
 
 for i=1:K
     J_min = inf;
     for l=1:L
-        J_temp = G(i, l)+P(i, :, l)*J_opt(i);
+        J_temp = G(i, l)+P(i, :, l)*J_opt;
         if J_temp < J_min
             u_opt_ind(i) = l;
             J_min = J_temp;
@@ -61,4 +61,3 @@ for i=1:K
     end
 end
 end
-

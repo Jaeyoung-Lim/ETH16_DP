@@ -57,19 +57,19 @@ cost = zeros(num_states, num_inputs);    % total cost i to j
 
 while(1)
     iter = iter + 1;
-    disp(['Number of iterations: ', num2str(iter)]);
+    
     for i = 1:num_states
         for u = 1:num_inputs
-            for j = 1:num_states
+            for j = i:num_states
                 cost(i,u) = cost(i,u) + P(i,j,u) * J_old(j,1);
             end
             J_temp(i,u) =  G(i, u) + cost(i,u);
         end
-        [J_opt(i,1), u_opt_ind(i,1)] = min(J_temp(i,:));
+        [J_opt(i), u_opt_ind(i)] = min(J_temp(i,:));
         
     end
     
-    disp(['That Value: ', num2str(sum((abs(J_opt - J_old))./(abs(J_old))))]);
+    %disp(['That Value: ', num2str(sum((abs(J_opt - J_old))./(abs(J_old))))]);
     
 % When you run this value interation, as you can see
 % The problem is J_opt and J_old are not changing anymore
@@ -77,7 +77,10 @@ while(1)
 % I don't know why... help me XD
     
     if sum((abs(J_opt - J_old))./(abs(J_old))) < err
-        disp('Value Iteration is done');
+     %   disp('Value Iteration is done');
+        break;
+    elseif iter > 10000 
+        disp('Value Iteration failed');
         break;
     else
         J_old = J_opt;

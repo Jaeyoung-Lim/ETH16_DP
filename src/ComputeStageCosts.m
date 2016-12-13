@@ -310,8 +310,6 @@ function MV = findMansionView(mansion, map)
     MV = MV_tmp(2:end, :);
 end
 
-
-
 function Pcam = findPCamera(cameras, FOV, n, m)
 %
 % find chance of geting caught by camera(s)
@@ -338,9 +336,6 @@ function Pcam = findPCamera(cameras, FOV, n, m)
 
      Pcam = 1-Pnot;
 end
-
-
-
 
 function Ps = findPSuccess(mansion, MV, n, m)
 %
