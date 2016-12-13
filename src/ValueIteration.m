@@ -46,43 +46,27 @@ num_inputs = size(P,3);             % number of inputs
 J_opt = zeros(num_states, 1);       % the optimal cost-to-go
 u_opt_ind = zeros(num_states, 1);   % index of the optimal control input
 iter = 0;                           % number of interations
-err = 0.5;                            % iteration error bound
-
-
+err = 0.05;                         % iteration error bound
 %% Perform
 
 
 % temporarily used variables
-J_old = J_opt;                           % old optimal cost-to-go
-J_temp = zeros(num_states, num_inputs);  % optimal cost-to-go include inputs
-cost = zeros(num_states, num_inputs);    % total cost i to j
+J_prev = J_opt;                           % old optimal cost-to-go
+J_candidates = zeros(num_states, num_inputs);  % optimal cost-to-go include inputs
 
-while(1)
-    iter = iter + 1;
+while(~terminate)
     
     for i = 1:num_states
-        for u = 1:num_inputs            
-            J_temp(i,u) =  G(i, u) + P(i,:,u) * J_old;
+        for u = 1:num_inputs
+            J_candidates(i,u) =  G(i, u) + P(i,:,u) * J_prev;
         end
-        [J_opt(i), u_opt_ind(i)] = min(J_temp(i,:));
-        
+        [J_opt(i), u_opt_ind(i)] = min(J_candidates(i,:));
     end
-    
-    %disp(['That Value: ', num2str(sum((abs(J_opt - J_old))./(abs(J_old))))]);
-    
-% When you run this value interation, as you can see
-% The problem is J_opt and J_old are not changing anymore
-% But they are not same. So, it means J are not converging....
-% I don't know why... help me XD
-    
-    if sum((abs(J_opt - J_old))./(abs(J_old))) < err
-     %   disp('Value Iteration is done');
-        break;
-    elseif iter > 10000 
-        disp('Value Iteration failed');
-        break;
+        
+    if norm(abs(J_opt - J_prev)) < err
+       break;
     else
-        J_old = J_opt;
-    end       
+        J_prev = J_opt;
+    end
 end
 end
