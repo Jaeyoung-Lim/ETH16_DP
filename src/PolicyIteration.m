@@ -47,8 +47,8 @@ while(~terminate)
         u = policy(m);
         b(m) = G(m, u);
         for n=1:K
-            if( (P(m,n,u)>0) && (m~=n) )
-                A(m,n) = -P(m,n,u);
+            if( (P(m,n,u)>0) )
+                A(m,n) = A(m,n) - P(m,n,u);
             end
         end
     end
