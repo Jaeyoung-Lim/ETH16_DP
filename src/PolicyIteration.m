@@ -38,9 +38,7 @@ cost = zeros(K,1);
 terminate = false;
 itr_cnt = 0;
 
-while(!terminate)
-
-    printf("iteration: %d\n", itr_cnt);
+while(~terminate)
 
     % update cost based on current policy
     A = eye(K);
@@ -54,7 +52,7 @@ while(!terminate)
             end
         end
     end
-    cost = inverse(A)*b;
+    cost = inv(A)*b;
 
     % find new policy policy using the above cost
     policy_tmp = ones(K,1);
