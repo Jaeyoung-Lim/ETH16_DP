@@ -39,8 +39,8 @@ shouldGenerateMap = false;
 mapSize = [ 20, 40 ]; % [N, M]
 
 % set the following to true to test the correponding implementation
-transitionProbabilitiesImplemented = false;
-stageCostsImplemented = false;
+transitionProbabilitiesImplemented = true;
+stageCostsImplemented = true;
 
 % set the following to true to test the correponding implementation
 valueIterationImplemented = false; 

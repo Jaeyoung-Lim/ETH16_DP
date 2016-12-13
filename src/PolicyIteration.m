@@ -40,30 +40,34 @@ itr_cnt = 0;
 
 while(!terminate)
 
-    printf("iteration: %d\n", itr_cnt);
+    printf("iteration: %d\n", itr_cnt)
 
     % update cost based on current policy
     A = eye(K);
     b = zeros(K,1);
     for m=1:K
         u = policy(m);
-        b(m) = G(m, u);
+        if(G(m,u)==inf)
+            b(m) = 1e10;
+        else
+            b(m) = G(m, u);
+        end
         for n=1:K
-            if( (P(m,n,u)>0) && (m~=n) )
-                A(m,n) = -P(m,n,u);
+            if( (P(m,n,u)>0) )
+                A(m,n) = A(m,n) - P(m,n,u);
             end
         end
     end
-    cost = inverse(A)*b;
+    cost_tmp = inv(A)*b;
 
     % find new policy policy using the above cost
-    policy_tmp = ones(K,1);
+    policy_tmp = zeros(K,1);
     for m=1:K
-        c = G(m, 1) + P(m,:,1)*cost;
+        c = G(m, 1) + P(m,:,1)*cost_tmp;
         policy_tmp(m) = 1;
         for u=2:5
-            c_trail = G(m, u) + P(m,:,u)*cost;
-            if( c_trail <= c)
+            c_trail = G(m, u) + P(m,:,u)*cost_tmp;
+            if( c_trail < c)
                 c = c_trail;
                 policy_tmp(m) = u;
             end
@@ -72,13 +76,13 @@ while(!terminate)
 
     % check condition for termination
     itr_cnt = itr_cnt + 1;
-    if( isequal(policy_tmp, policy) || (itr_cnt>1000) )
+    if( isequal(cost, cost_tmp) || (itr_cnt>1000) )
         terminate = true;
     end
 
     % update policy
     policy = policy_tmp;
-
+    cost = cost_tmp;
 end
 
 J_opt = cost;
