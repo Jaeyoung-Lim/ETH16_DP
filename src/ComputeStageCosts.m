@@ -94,18 +94,18 @@ for k = 1:K
          jj = find(ismember(stateSpace, [n, m+1], 'rows'), 1);
          Pcam = findPCamera(cameras, FOV, n, m+1);
          if( map(m+1, n)<0 )
-             G(k,1) += 4*P(ii,jj,1); % if in pool
-             if( jj != gg )
-                 G(k,1) += 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+             G(k,1) = G(k,1) + 4*P(ii,jj,1); % if in pool
+             if( jj ~= gg )
+                 G(k,1) = G(k,1) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
                            9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              else
-                 G(k,1) += 1*(1-Pcam) + 7*Pcam;
+                 G(k,1) = G(k,1) + 1*(1-Pcam) + 7*Pcam;
              end
          else    % if not in pool
-             if( jj != gg )
-                 G(k,1) += 1*P(ii,jj,1) + 7*P(ii,gg,1);
+             if( jj ~= gg )
+                 G(k,1) = G(k,1) + 1*P(ii,jj,1) + 7*P(ii,gg,1);
              else
-                 G(k,1) += 1*(1-Pcam) + 7*Pcam;
+                 G(k,1) = G(k,1) + 1*(1-Pcam) + 7*Pcam;
              end
          end
      end
@@ -120,16 +120,16 @@ for k = 1:K
          jj = find(ismember(stateSpace, [n-1, m], 'rows'), 1);
          Pcam = findPCamera(cameras, FOV, n-1, m);
          if( map(m, n-1)<0 )
-             G(k,2) += 4*P(ii,jj,2); % if in pool
-             if( jj != gg )
-                 G(k,2) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+             G(k,2) = G(k, 2) + 4*P(ii,jj,2); % if in pool
+             if( jj ~= gg )
+                 G(k,2) = G(k, 2) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
                            9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end
          else    % if not in pool
-             if( jj != gg )
-                 G(k,2) += 1*P(ii,jj,2) + 7*P(ii,gg,2);
+             if( jj ~= gg )
+                 G(k,2) = G(k, 2) + 1*P(ii,jj,2) + 7*P(ii,gg,2);
              else
-                 G(k,2) += 1*(1-Pcam) + 7*Pcam;
+                 G(k,2) = G(k, 2) + 1*(1-Pcam) + 7*Pcam;
 
              end
          end
@@ -145,16 +145,16 @@ for k = 1:K
          jj = find(ismember(stateSpace, [n, m-1], 'rows'), 1);
          Pcam = findPCamera(cameras, FOV, n, m-1);
          if( map(m-1, n)<0 )
-             G(k,3) += 4*P(ii,jj,3); % if in pool
-             if( jj != gg )
-                 G(k,3) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+             G(k,3) = G(k,3) + 4*P(ii,jj,3); % if in pool
+             if( jj ~= gg )
+                 G(k,3) = G(k,3) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
                            9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end
          else    % if not in pool
-             if( jj != gg )
-                 G(k,3) += 1*P(ii,jj,3) + 7*P(ii,gg,3);
+             if( jj ~= gg )
+                 G(k,3) = G(k,3) + 1*P(ii,jj,3) + 7*P(ii,gg,3);
              else
-                 G(k,3) += 1*(1-Pcam) + 7*Pcam;
+                 G(k,3) = G(k,3) + 1*(1-Pcam) + 7*Pcam;
 
              end
          end
@@ -170,26 +170,26 @@ for k = 1:K
          jj = find(ismember(stateSpace, [n+1, m], 'rows'), 1);
          Pcam = findPCamera(cameras, FOV, n+1, m);
          if( map(m, n+1)<0 )
-             G(k,4) += 4*P(ii,jj,4); % if in pool
-             if( jj != gg )
-                 G(k,4) +=  7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
+             G(k,4) = G(k,4) + 4*P(ii,jj,4); % if in pool
+             if( jj ~= gg )
+                 G(k,4) = G(k,4) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
                            9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
              end 
          else    % if not in pool
-             if( jj != gg )
-                 G(k,4) += 1*P(ii,jj,4) + 7*P(ii,gg,4);
+             if( jj ~= gg )
+                 G(k,4) = G(k,4) + 1*P(ii,jj,4) + 7*P(ii,gg,4);
              else
-                 G(k,4) += 1*(1-Pcam) + 7*Pcam;
+                 G(k,4) = G(k,4) + 1*(1-Pcam) + 7*Pcam;
 
              end
          end
      end
 
      % cost of taking a photo
-     if( ii != gg )
+     if( ii ~= gg )
          G(k, 5) = 1*P(ii,ii,5);                 % if fail but not caught
-         G(k, 5) += 7*P(ii,gg,5);                % if go to gate
-         G(k, 5) += 1*(1-P(ii,ii,5)-P(ii,gg,5)); % if success
+         G(k, 5) = G(k, 5) + 7*P(ii,gg,5);                % if go to gate
+         G(k, 5) = G(k, 5) + 1*(1-P(ii,ii,5)-P(ii,gg,5)); % if success
      else
          % if take photo at gate, special treatment
          % assume you cannot see the mansion from the gate

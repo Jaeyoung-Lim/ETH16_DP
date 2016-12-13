@@ -49,7 +49,7 @@ while(!terminate)
         u = policy(m);
         b(m) = G(m, u);
         for n=1:K
-            if( (P(m,n,u)>0) && (m!=n) )
+            if( (P(m,n,u)>0) && (m~=n) )
                 A(m,n) = -P(m,n,u);
             end
         end
@@ -71,7 +71,7 @@ while(!terminate)
     end
 
     % check condition for termination
-    itr_cnt += 1;
+    itr_cnt = itr_cnt + 1;
     if( isequal(policy_tmp, policy) || (itr_cnt>1000) )
         terminate = true;
     end
