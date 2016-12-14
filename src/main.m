@@ -23,6 +23,9 @@ clear all;
 close all;
 clc;
 
+%%
+addpath('../../Test');
+
 %% define global problem parameters
 % These variables may be used in your implementations. Do not add any
 % additional global variable here for your implementations!
@@ -35,7 +38,7 @@ detected_additional_time_steps = 6;	% additional time steps if detected and brou
 %% options
 % set to true to generate a randon map of size mapSize, else set to false 
 % to load the pre-exsisting example map
-shouldGenerateMap = false;
+shouldGenerateMap = true;
 mapSize = [ 20, 40 ]; % [N, M]
 
 % set the following to true to test the correponding implementation

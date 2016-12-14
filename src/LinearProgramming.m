@@ -46,7 +46,7 @@ end
 
 A_filtered = A((b~=inf), :);
 b_filtered = b(b~=inf);
-f=-1*ones(1, K);
+f=-1*ones(K, 1);
 
 J_opt = linprog(f, A_filtered , b_filtered);
 
