@@ -47,8 +47,8 @@ end
 A_filtered = A((b~=inf), :);
 b_filtered = b(b~=inf);
 f=-1*ones(K, 1);
-
-J_opt = linprog(f, A_filtered , b_filtered);
+options=optimset('Display', 'off');
+J_opt = linprog(f, A_filtered , b_filtered,  [], [], [], [], [], options);
 
 for i=1:K
     J_min = inf;

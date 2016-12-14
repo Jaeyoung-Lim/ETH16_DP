@@ -52,7 +52,7 @@ tol_PI = 1e-4;
 tol_LP = 1e-4;
 
 % visualization option 
-vis_map = false;
+vis_map = true;
 vis_iter = false;
 
 %% load examples 
@@ -100,7 +100,7 @@ for i=1:num_rand
     
     if vis_map     
         disp(['display map. press any key to continue...', num2str(i)]);        
-        PlotMap( 1, mapSize, map, gate, mansion, cameras );
+        PlotMap( 1, randomMapSize(i, :), map, gate, mansion, cameras );
         waitforbuttonpress;
     end
     

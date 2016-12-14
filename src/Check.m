@@ -340,28 +340,27 @@ function G = ComputeStageCostsDH( stateSpace, controlSpace, map, gate, mansion, 
             else
                 % otherwise
                 if map(y, x) < 0
-                    % pond/pool case 
-                    % TODO caught during moving?
+                    % pond/pool case
                     % calculate prob to be caught by security camera
                     probToBeCaught = 1 - prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
                     probNotToBeCaught = 1 - probToBeCaught;
                     
                     costToMove = pool_num_time_steps;
+                    costToBeCaught = pool_num_time_steps + detected_additional_time_steps;
                 else
                     % calculate prob to be caught by security camera
                     probToBeCaught = 1 - prod(1 - camMat(y, x, :));
                     probNotToBeCaught = 1 - probToBeCaught;
-                                        
+                    
                     costToMove = 1;
+                    costToBeCaught = 1 + detected_additional_time_steps;
                 end
                 
                 if nextState == currentState
                     % inf when next state is inaccessible
                     costToMove = inf;
+                    costToBeCaught = 1 + detected_additional_time_steps;
                 end
-                
-                % costs
-                costToBeCaught = 1 + detected_additional_time_steps;
                 
                 % update G matrix
                 G(j, i) = probToBeCaught * costToBeCaught ...
@@ -770,6 +769,7 @@ function [ J_opt, u_opt_ind ] = LinearProgrammingDH( P, G )
     A_reshape = zeros(K*L, K);
     
     for l=1:L
+        % vertically concat
         A_reshape((l-1)*K+1:l*K,:) = A(:,:,l);
     end
     
@@ -787,8 +787,8 @@ function [ J_opt, u_opt_ind ] = LinearProgrammingDH( P, G )
     % find optimal action
     cost = zeros(K, L);
     
-    for i=1:L
-        cost(:, i) = G(:, i) + P(:, :, i) * J_opt;
+    for l=1:L
+        cost(:, l) = G(:, l) + P(:, :, l) * J_opt;
     end
     
     [~, u_opt_ind] = min(cost, [], 2);

@@ -38,7 +38,7 @@ detected_additional_time_steps = 6;	% additional time steps if detected and brou
 %% options
 % set to true to generate a randon map of size mapSize, else set to false 
 % to load the pre-exsisting example map
-shouldGenerateMap = true;
+shouldGenerateMap = false;
 mapSize = [ 20, 40 ]; % [N, M]
 
 % set the following to true to test the correponding implementation
