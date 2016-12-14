@@ -348,7 +348,7 @@ function Ps = findPSuccess(mansion, MV, n, m)
 
     % if we can see mansion directly
     if(sum( ismember(MV, [n,m], 'rows'))>0)
-        dist_vec = sqrt( (MV(:,1)-n).^2 + (MV(:,2)-m).^2);
+        dist_vec = sqrt( (mansion(:,1)-n).^2 + (mansion(:,2)-m).^2);
         dist_min = min(dist_vec);
         Ps = max(0.001, 0.5/dist_min);
     end
