@@ -96,8 +96,7 @@ for k = 1:K
          if( map(m+1, n)<0 )
              G(k,1) = G(k,1) + 4*P(ii,jj,1); % if in pool
              if( jj ~= gg )
-                 G(k,1) = G(k,1) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
-                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
+                 G(k,1) = G(k,1) + 10*(1-(1-Pcam)^4);
              else
                  G(k,1) = G(k,1) + 1*(1-Pcam) + 7*Pcam;
              end
@@ -122,8 +121,7 @@ for k = 1:K
          if( map(m, n-1)<0 )
              G(k,2) = G(k, 2) + 4*P(ii,jj,2); % if in pool
              if( jj ~= gg )
-                 G(k,2) = G(k, 2) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
-                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
+                 G(k,2) = G(k, 2) + 10*(1-(1-Pcam)^4);
              end
          else    % if not in pool
              if( jj ~= gg )
@@ -147,8 +145,7 @@ for k = 1:K
          if( map(m-1, n)<0 )
              G(k,3) = G(k,3) + 4*P(ii,jj,3); % if in pool
              if( jj ~= gg )
-                 G(k,3) = G(k,3) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
-                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
+                 G(k,3) = G(k,3) + 10*(1-(1-Pcam)^4);
              end
          else    % if not in pool
              if( jj ~= gg )
@@ -172,8 +169,7 @@ for k = 1:K
          if( map(m, n+1)<0 )
              G(k,4) = G(k,4) + 4*P(ii,jj,4); % if in pool
              if( jj ~= gg )
-                 G(k,4) = G(k,4) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
-                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
+                 G(k,4) = G(k,4) + 10*(1-(1-Pcam)^4);
              end 
          else    % if not in pool
              if( jj ~= gg )
@@ -310,6 +306,8 @@ function MV = findMansionView(mansion, map)
     MV = MV_tmp(2:end, :);
 end
 
+
+
 function Pcam = findPCamera(cameras, FOV, n, m)
 %
 % find chance of geting caught by camera(s)
@@ -330,12 +328,15 @@ function Pcam = findPCamera(cameras, FOV, n, m)
      for c = 1:Ncam
          if( sum( ismember(FOV{c}, [n,m], 'rows'))>0 )
              dist = sqrt((cameras(c,1)-n)^2 + (cameras(c,2)-m)^2);
-             Pnot = Pnot*(1-cameras(c,3)/dist);
+             Pnot *= (1-cameras(c,3)/dist);
          end
      end
 
      Pcam = 1-Pnot;
 end
+
+
+
 
 function Ps = findPSuccess(mansion, MV, n, m)
 %
