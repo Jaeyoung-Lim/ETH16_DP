@@ -215,18 +215,23 @@ function P = ComputeTransitionProbabilitiesDH( stateSpace, controlSpace, map, ga
                 P(j, FindStateIndex(nextState, stateSpace), i) = ...
                     P(j, FindStateIndex(nextState, stateSpace), i) + probToFailed * probNotToBeCaught;
             else
-                % otherwise
+                 % otherwise
                 if map(y, x) < 0
                     % pond/pool case 
                     % calculate prob to be caught by security camera
-%                     probToBeCaught = 1 - prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
-%                     probNotToBeCaught = 1 - probToBeCaught;
-                    probNotToBeCaught = prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
-                    probToBeCaught = 1 - probNotToBeCaught;
+                    
+                    if map(currentState(2), currentState(1)) < 0
+                        % if currentState is in pond/pool as well, time
+                        % step is just 1 
+                        probNotToBeCaught = prod(1 - camMat(y, x, :));
+                        probToBeCaught = 1 - probNotToBeCaught;
+                    else
+                        % else, time step will be pool_num_time_steps
+                        probNotToBeCaught = prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
+                        probToBeCaught = 1 - probNotToBeCaught;
+                    end
                 else
                     % calculate prob to be caught by security camera
-%                     probToBeCaught = 1 - prod(1 - camMat(y, x, :));
-%                     probNotToBeCaught = 1 - probToBeCaught;
                     probNotToBeCaught = prod(1 - camMat(y, x, :));
                     probToBeCaught = 1 - probNotToBeCaught;
                 end
@@ -340,18 +345,30 @@ function G = ComputeStageCostsDH( stateSpace, controlSpace, map, gate, mansion, 
             else
                 % otherwise
                 if map(y, x) < 0
-                    % pond/pool case
+                    % pond/pool case 
                     % calculate prob to be caught by security camera
-                    probToBeCaught = 1 - prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
-                    probNotToBeCaught = 1 - probToBeCaught;
                     
-                    costToMove = pool_num_time_steps;
-                    costToBeCaught = pool_num_time_steps + detected_additional_time_steps;
+                    if map(currentState(2), currentState(1)) < 0
+                        % if currentState is in pond/pool as well, time
+                        % step is just 1
+                        probNotToBeCaught = prod(1 - camMat(y, x, :));
+                        probToBeCaught = 1 - probNotToBeCaught;
+                        
+                        costToMove = 1;
+                        costToBeCaught = 1 + detected_additional_time_steps;
+                    else
+                        % else, time step will be pool_num_time_steps
+                        probNotToBeCaught = prod(1 - camMat(y, x, :)) ^ pool_num_time_steps;
+                        probToBeCaught = 1 - probNotToBeCaught;
+                        
+                        costToMove = pool_num_time_steps;
+                        costToBeCaught = pool_num_time_steps + detected_additional_time_steps;
+                    end
                 else
                     % calculate prob to be caught by security camera
                     probToBeCaught = 1 - prod(1 - camMat(y, x, :));
                     probNotToBeCaught = 1 - probToBeCaught;
-                    
+                                        
                     costToMove = 1;
                     costToBeCaught = 1 + detected_additional_time_steps;
                 end

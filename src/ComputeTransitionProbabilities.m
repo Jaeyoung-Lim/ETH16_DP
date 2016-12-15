@@ -42,17 +42,21 @@ function P = ComputeTransitionProbabilities( stateSpace, controlSpace, map, gate
 %           The entry P(i, j, l) represents the transition probability
 %           from state i to state j if control input l is applied.
 %% Initialize
-l = size(controlSpace,1);
-[K, ~] = size(stateSpace);
-[M, N] = size(map);
-P = zeros(K, K, l); %Initialize P
+L = size(controlSpace,1);
+K = size(stateSpace, 1);
+
+M = size(map, 1);
+N = size(map, 2);
+
+P = zeros(K, K, L); %Initialize P
+
 u = [0, 1;
     -1, 0;
     0, -1;
     1, 0;
     0, 0]; % Control space to postion inputs
     
-state_gate = find(ismember(stateSpace, gate, 'rows')); % Find state of gate
+gg = find(ismember(stateSpace, gate, 'rows')); % Find state of gate
 
 %% Compute for each position
 for k=1:K %Iteration for steps
@@ -63,12 +67,11 @@ for k=1:K %Iteration for steps
    P_picture =0.001;
    for m=1: size(mansion, 1)
         err_mansion = cur_pos-mansion(m, :);
-        if err_mansion(1)==0 || err_mansion(2)==0
-            
-            if err_mansion(1)==0  %Camera is aligned with current position
+        if err_mansion(1)==0 || err_mansion(2)==0      
+            if err_mansion(1) == 0  %Camera is aligned with current position
                 % Values along the camera-position path
                 path_mansion = map(min(cur_pos(2), cur_pos(2)-err_mansion(2)+sign(err_mansion(2))): max(cur_pos(2), cur_pos(2)-err_mansion(2)+sign(err_mansion(2))), cur_pos(1));
-            elseif err_mansion(2)==0
+            elseif err_mansion(2) == 0
                 path_mansion = map(cur_pos(2), min(cur_pos(1), cur_pos(1)-err_mansion(1)+sign(err_mansion(1))): max(cur_pos(1), cur_pos(1)-err_mansion(1)+sign(err_mansion(1))));
             else
                 path_mansion = [1, 1];
@@ -82,7 +85,7 @@ for k=1:K %Iteration for steps
    end
 
    %% Compute probabilty for moving to the next cell
-   for l=1:5 % Iterate for each inputs
+   for l=1:L % Iterate for each inputs
     future_pos = cur_pos+u(l, :);
     
     if future_pos(1)<=0 || future_pos(1)>N || future_pos(2)<=0 || future_pos(2)>M
@@ -110,7 +113,7 @@ for k=1:K %Iteration for steps
                 path_cam = map(future_pos(2), min(future_pos(1), future_pos(1)-err_cam(1)+sign(err_cam(1))):max(future_pos(1), future_pos(1)-err_cam(1)+sign(err_cam(1))))';
             end   
             if all(path_cam(:)<=0) %There is no occlusion
-                if map(future_pos(2), future_pos(1))<0
+                if map(future_pos(2), future_pos(1))<0 && map(cur_pos(2), cur_pos(1))>=0
                     P_notcaught=P_notcaught*((1-cameras(c, 3)/norm(err_cam))^4);
                 else
                     P_notcaught=P_notcaught*(1-cameras(c, 3)/norm(err_cam));
@@ -120,18 +123,18 @@ for k=1:K %Iteration for steps
     end
 
      if l==5 %When taking a picture
-         if future_state == state_gate
+         if future_state == gg
              P(k, future_state, l)=1-P_picture;         
          else
             P(k, future_state, l)=P_notcaught*(1-P_picture);
-            P(k, state_gate, l)=(1-P_notcaught)*(1-P_picture);% Failed to take picture and got caught by the camera
+            P(k, gg, l)=(1-P_notcaught)*(1-P_picture);% Failed to take picture and got caught by the camera
          end
     else %Wwhen moving to a new state
-        if future_state == state_gate
+        if future_state == gg
             P(k, future_state, l)=P_notcaught+(1-P_notcaught);
         else
             P(k, future_state, l)=P_notcaught;
-            P(k, state_gate, l)=1-P_notcaught;
+            P(k, gg, l)=1-P_notcaught;
         end
     end
    end
