@@ -56,7 +56,7 @@ if shouldGenerateMap
         mapSize( 1 ), mapSize( 2 ) );
 else
     % In order to save time we can just load a pre-generated map.
-    load( 'exampleMap.mat' );
+    load( './data/map4.mat' );
 end
 
 %PlotMap( 1, mapSize, map, gate, mansion, cameras );

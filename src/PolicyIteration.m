@@ -40,18 +40,14 @@ itr_cnt = 0;
 
 while(!terminate)
 
-    printf("iteration: %d\n", itr_cnt)
+    %printf("iteration: %d\n", itr_cnt)
 
     % update cost based on current policy
     A = eye(K);
     b = zeros(K,1);
     for m=1:K
         u = policy(m);
-        if(G(m,u)==inf)
-            b(m) = 1e10;
-        else
-            b(m) = G(m, u);
-        end
+        b(m) = G(m, u);
         for n=1:K
             if( (P(m,n,u)>0) )
                 A(m,n) = A(m,n) - P(m,n,u);

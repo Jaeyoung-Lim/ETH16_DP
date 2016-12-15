@@ -30,6 +30,34 @@ function [ J_opt, u_opt_ind ] = LinearProgramming( P, G )
 %       	input for each element of the state space.
 
 % put your code here
+K = size(G, 1); % Number of states
+L = size(G, 2); % Number of control inputs
+u_opt_ind=zeros(K, 1);
 
+for l=1:L
+    if l==1
+        b= G(:, l);
+        A = eye(K, K)-P(:, :, l);
+        continue;
+    end
+    b= [b; G(:, l)];
+    A = [A; eye(K, K)-P(:, :, l)];
 end
 
+A_filtered = A((b~=inf), :);
+b_filtered = b(b~=inf);
+f=-1*ones(K, 1);
+
+J_opt = linprog(f, A_filtered , b_filtered);
+
+for i=1:K
+    J_min = inf;
+    for l=1:L
+        J_temp = G(i, l)+P(i, :, l)*J_opt;
+        if J_temp < J_min
+            u_opt_ind(i) = l;
+            J_min = J_temp;
+        end
+    end
+end
+end
