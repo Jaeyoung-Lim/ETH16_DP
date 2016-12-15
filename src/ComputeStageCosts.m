@@ -328,7 +328,7 @@ function Pcam = findPCamera(cameras, FOV, n, m)
      for c = 1:Ncam
          if( sum( ismember(FOV{c}, [n,m], 'rows'))>0 )
              dist = sqrt((cameras(c,1)-n)^2 + (cameras(c,2)-m)^2);
-             Pnot *= (1-cameras(c,3)/dist);
+             Pnot = Pnot * (1-cameras(c,3)/dist);
          end
      end
 
