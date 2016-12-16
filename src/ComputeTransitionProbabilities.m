@@ -113,7 +113,7 @@ for k=1:K %Iteration for steps
                 path_cam = map(future_pos(2), min(future_pos(1), future_pos(1)-err_cam(1)+sign(err_cam(1))):max(future_pos(1), future_pos(1)-err_cam(1)+sign(err_cam(1))))';
             end   
             if all(path_cam(:)<=0) %There is no occlusion
-                if map(future_pos(2), future_pos(1))<0 %&& map(cur_pos(2), cur_pos(1))>=0
+                if map(future_pos(2), future_pos(1))<0 %  && map(cur_pos(2), cur_pos(1))>=0
                     P_notcaught=P_notcaught*((1-cameras(c, 3)/norm(err_cam))^4);
                 else
                     P_notcaught=P_notcaught*(1-cameras(c, 3)/norm(err_cam));
