@@ -14,7 +14,7 @@
 clear all;
 close all;
 clc;
-% rng(2)
+rng(2)
 
 %% define global problem parameters
 % These variables may be used in your implementations. Do not add any
