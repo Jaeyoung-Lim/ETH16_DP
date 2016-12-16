@@ -73,7 +73,6 @@ while(~terminate)
     if( isequal(policy_tmp, policy) || (itr_cnt>1000) )
         terminate = true;
     end
-
     % update policy
     policy = policy_tmp;
 
