@@ -128,7 +128,7 @@ for k = 1:K
              if( jj ~= gg )
                  G(k,2) = G(k, 2) + 1*P(ii,jj,2) + 7*P(ii,gg,2);
              else
-                 G(k,2) = G(k, 2) + 10*(1-Pcam)^4;
+                 G(k,2) = G(k, 2) + 1*(1-Pcam) + 7*Pcam ;
 
              end
          end
@@ -206,7 +206,7 @@ function FOV = findFOV(cameras, map)
 %
 %       map:
 %           A (M x N)-matrix describing the terrain of the estate map.
-%           Positive values indicate cells that are inaccessible (e.g.
+%           Positive values indicate 0cells that are inaccessible (e.g.
 %           trees, bushes or the mansion) and negative values indicate
 %           ponds or pools.
 %
