@@ -122,14 +122,13 @@ for k = 1:K
          if( map(m, n-1)<0 )
              G(k,2) = G(k, 2) + 4*P(ii,jj,2); % if in pool
              if( jj ~= gg )
-                 G(k,2) = G(k, 2) + 7*Pcam*(1-Pcam) + 8*Pcam*(1-Pcam)^2 + ...
-                           9*Pcam*(1-Pcam)^3 + 10*Pcam*(1-Pcam)^4;
+                 G(k,2) = G(k, 2) + 10*Pcam*(1-Pcam)^4;
              end
          else    % if not in pool
              if( jj ~= gg )
                  G(k,2) = G(k, 2) + 1*P(ii,jj,2) + 7*P(ii,gg,2);
              else
-                 G(k,2) = G(k, 2) + 1*(1-Pcam) + 7*Pcam;
+                 G(k,2) = G(k, 2) + 10*(1-Pcam)^4;
 
              end
          end
