@@ -29,56 +29,53 @@ function [ J_opt, u_opt_ind ] = PolicyIteration( P, G )
 %       	A (K x 1)-matrix containing the index of the optimal control
 %       	input for each element of the state space.
 
-K = size(G,1);
-
-% initial guess on policy: taking photo everywhere
-policy = ones(K,1) * 5;
-cost = zeros(K,1);
-
+% Initialize
+K = size(G,1); %Number of states
+L = size(G, 2);
 terminate = false;
-itr_cnt = 0;
+A = zeros(K, K);
+b = zeros(K,1);
 
-while(~terminate)
 
-    % update cost based on current policy
-    A = eye(K);
-    b = zeros(K,1);
-    for m=1:K
-        u = policy(m);
-        b(m) = G(m, u);
-        for n=1:K
-            if( (P(m,n,u)>0) )
-                A(m,n) = A(m,n) - P(m,n,u);
-            end
-        end
-    end
-    cost = inv(A)*b;
 
-    % find new policy policy using the above cost
-    policy_tmp = ones(K,1);
-    for m=1:K
-        c = G(m, 1) + P(m,:,1)*cost;
-        policy_tmp(m) = 1;
-        for u=2:5
-            c_trail = G(m, u) + P(m,:,u)*cost;
-            if( c_trail <= c)
-                c = c_trail;
-                policy_tmp(m) = u;
-            end
-        end
-    end
 
-    % check condition for termination
-    itr_cnt = itr_cnt + 1;
-    if( isequal(policy_tmp, policy) || (itr_cnt>1000) )
-        terminate = true;
-    end
-    % update policy
-    policy = policy_tmp;
+% update cost based on Initial policy
 
+u_opt_ind = ones(K,1) * L; % Stationary Policy
+for i=1:K % Policy evaluation step
+    b(i) = G(i, L); %Stationary policy
+    A(i, :)= P(i, :, L);
 end
 
-J_opt = cost;
-u_opt_ind = policy;
+J_opt = (eye(K) - A)\b; %Calculate inital optimal cost to go
+J_temp = J_opt;
 
+while(~terminate)
+    % find new policy policy using the above cost
+    
+     for m=1:K
+         cost_min = G(m, 1) + P(m,:,1)*J_opt;
+         J_temp(m) = cost_min;
+         u_opt_ind(m) = 1;
+         
+         for u=2:5
+             c_trail = G(m, u) + P(m,:,u)*J_opt;
+             
+             if( c_trail <= cost_min)
+                 cost_min = c_trail; %Update minimum cost to go
+                 J_temp(m) = cost_min;  %For updating J_opt
+                 u_opt_ind(m) = u; %Find the optimal u
+             end
+         end
+     end
+    % check condition for termination
+    if max(J_opt - J_temp) < 1e-5
+         terminate = true;
+         u_opt_ind = u_opt_ind_temp;
+    else
+        J_opt = J_temp; %Upate
+        u_opt_ind_temp = u_opt_ind;
+    end
+    
+end
 end
